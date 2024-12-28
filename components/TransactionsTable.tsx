@@ -35,16 +35,18 @@ const CategoryBadge = ({ category }: CategoryBadgeProps) => {
 
 const TransactionsTable = ({ transactions = [] }: TransactionTableProps) => {
   return (
-    <div>
-      <Table>
+    <div className="overflow-x-auto">
+      <Table className="min-w-full table-auto">
         <TableHeader className="bg-gray-100">
           <TableRow>
             <TableHead className="px-2">Transaction</TableHead>
             <TableHead className="px-2">Amount</TableHead>
             <TableHead className="px-2">Status</TableHead>
             <TableHead className="px-2">Date</TableHead>
-            <TableHead className="px-2 max-md:hidden">Channel</TableHead>
-            <TableHead className="px-2 max-md:hidden">Category</TableHead>
+            <TableHead className="px-2 hidden md:table-cell">Channel</TableHead>
+            <TableHead className="px-2 hidden md:table-cell">
+              Category
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -61,14 +63,12 @@ const TransactionsTable = ({ transactions = [] }: TransactionTableProps) => {
                 className={cn({
                   "bg-red-50": isDebit || amount[0] === "-",
                   "bg-green-50": !isDebit && amount[0] !== "-",
-                  "!over:bg-none": true,
-                  "!border-b-DEFAULT": true,
                 })}
               >
-                <TableCell className="max-w-[250px] pl-2 pr-10">
+                <TableCell className="max-w-[250px] truncate px-2">
                   <div className="flex items-center gap-3">
                     <h1
-                      className="text-14 truncate font-semibold text-gray-700"
+                      className="text-[14px] font-semibold text-gray-700"
                       title={t.name}
                     >
                       {removeSpecialCharacters(t.name) || "Unknown"}
@@ -76,23 +76,23 @@ const TransactionsTable = ({ transactions = [] }: TransactionTableProps) => {
                   </div>
                 </TableCell>
                 <TableCell
-                  className={cn("pl-2 pr-10 font-semibold", {
+                  className={cn("px-2 font-semibold", {
                     "text-red-600": isDebit || amount[0] === "-",
                     "text-green-600": !isDebit && amount[0] !== "-",
                   })}
                 >
                   {isDebit ? `-${amount}` : isCredit ? amount : amount}
                 </TableCell>
-                <TableCell className="pl-2 pr-10">
+                <TableCell className="px-2">
                   <CategoryBadge category={status} />
                 </TableCell>
-                <TableCell className="min-w-32 pl-2 pr-10">
+                <TableCell className="px-2">
                   {formatDateTime(new Date(t.date)).dateTime}
                 </TableCell>
-                <TableCell className="pl-2 pr-10 capitalize min-w-24">
+                <TableCell className="px-2 hidden md:table-cell capitalize">
                   {t.paymentChannel || "N/A"}
                 </TableCell>
-                <TableCell className="pl-2 pr-10 max-md:hidden">
+                <TableCell className="px-2 hidden md:table-cell">
                   <CategoryBadge category={t.category || "Unknown"} />
                 </TableCell>
               </TableRow>
