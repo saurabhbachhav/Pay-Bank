@@ -29,16 +29,50 @@ export const createFundingSource = async (
   options: CreateFundingSourceOptions
 ) => {
   try {
-    return await dwollaClient
-      .post(`customers/${options.customerId}/funding-sources`, {
+    // Log the input parameters for debugging purposes
+    // console.log("Creating Funding Source for Customer ID:", options.customerId);
+    // console.log("Funding Source Name:", options.fundingSourceName);
+    // console.log("Plaid Token:", options.plaidToken);
+
+    // Attempt to create the funding source
+    const res = await dwollaClient.post(
+      `customers/${options.customerId}/funding-sources`,
+      {
         name: options.fundingSourceName,
         plaidToken: options.plaidToken,
-      })
-      .then((res) => res.headers.get("location"));
+      }
+    );
+
+    // Check for success status
+    if (res.status !== 201) {
+      throw new Error(`Failed to create funding source. Status: ${res.status}`);
+    }
+
+    // Get the location header (where the new resource is located)
+    const locationHeader = res.headers.get("location");
+
+    // Log the location header for debugging
+    // console.log("Funding Source Created. Location:", locationHeader);
+
+    return locationHeader; // Return the location URL of the created funding source
   } catch (err) {
+    // Log the full error for better debugging
     console.error("Creating a Funding Source Failed: ", err);
+
+    // Add more descriptive error if applicable
+    if (err.response) {
+      console.error("Error Response:", err.response);
+    } else if (err.request) {
+      console.error("Error Request:", err.request);
+    } else {
+      console.error("General Error:", err.message);
+    }
+
+    // Optionally, throw the error to propagate it to the caller
+    throw new Error("Error occurred while creating funding source.");
   }
 };
+
 
 export const createOnDemandAuthorization = async () => {
   try {
@@ -101,7 +135,7 @@ export const addFundingSource = async ({
   try {
     // create dwolla auth link
     const dwollaAuthLinks = await createOnDemandAuthorization();
-
+   
     // add funding source to the dwolla customer & get the funding source url
     const fundingSourceOptions = {
       customerId: dwollaCustomerId,
