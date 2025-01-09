@@ -26,6 +26,7 @@ import PlaidLink from "./PlaidLink";
 const AuthForm = ({ type }: { type: string }) => {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("");
   const router = useRouter();
 
   const formSchema = authFormSchema(type);
@@ -58,7 +59,13 @@ const AuthForm = ({ type }: { type: string }) => {
           password:data.password
         };
         const newUser = await signUp(userData);
-        setUser(newUser); // Optionally handle new user
+        // console.log(newUser);
+        if (newUser.success==="false") {
+          setMessage(newUser.message);
+        } else {
+          setUser(newUser); // Optionally handle new user
+          setMessage("");
+        }
       }
       if (type === "sign-in") {
         const response = await signIn({
@@ -180,7 +187,7 @@ const AuthForm = ({ type }: { type: string }) => {
                 label="Password"
                 placeholder="Enter your password"
               />
-
+              {message && <h4 className="text-red-500">{message}</h4>}
               <div className="flex flex-col gap-4">
                 <Button type="submit" disabled={isLoading} className="form-btn">
                   {isLoading ? (
@@ -212,7 +219,7 @@ const AuthForm = ({ type }: { type: string }) => {
             </Link>
           </footer>
         </>
-     )} 
+      )}
     </section>
   );
 };
